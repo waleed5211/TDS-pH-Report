@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boiler TDS & pH Report Generator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2canvas Library for Image Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --accent-color: #007AFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 40%, #415a77 70%, #11998e 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Liquid Glass Card Container */
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--glass-shadow);
+            transform: translateY(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.3px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-download {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, #007AFF 0%, #00C6FF 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 25px rgba(0, 122, 255, 0.6);
+        }
+
+        .btn-download:active {
+            transform: scale(0.98);
+        }
+
+        /* Hidden Template Box Specifically For Image Capture */
+        #report-template-wrapper {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+        }
+
+        #report-template {
+            width: 600px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 40px;
+            font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .report-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .report-table th, .report-table td {
+            border: 1px solid #111;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .report-table th {
+            background-color: #f2f2f2;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .report-table td {
+            color: #222;
+            font-weight: 500;
+        }
+
+        .report-table td:nth-child(2) {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Liquid Glass UI Form -->
+    <div class="glass-container">
+        <h1>TDS / pH Data Entry</h1>
+        
+        <form id="data-form">
+            <div class="input-group">
+                <label for="ro-tds">RO TDS</label>
+                <input type="number" id="ro-tds" step="any" placeholder="e.g. 50">
+            </div>
+            <div class="input-group">
+                <label for="ro-ph">RO pH</label>
+                <input type="number" id="ro-ph" step="any" placeholder="e.g. 6.8">
+            </div>
+            <div class="input-group">
+                <label for="feed-tds">Feed Tank TDS</label>
+                <input type="number" id="feed-tds" step="any" placeholder="e.g. 120">
+            </div>
+            <div class="input-group">
+                <label for="feed-ph">Feed Tank pH</label>
+                <input type="number" id="feed-ph" step="any" placeholder="e.g. 7.5">
+            </div>
+            <div class="input-group">
+                <label for="boiler-tds">Boiler TDS</label>
+                <input type="number" id="boiler-tds" step="any" placeholder="e.g. 2500">
+            </div>
+            <div class="input-group">
+                <label for="boiler-ph">Boiler pH</label>
+                <input type="number" id="boiler-ph" step="any" placeholder="e.g. 10.5">
+            </div>
+
+            <button type="button" class="btn-download" onclick="generateAndDownloadImage()">
+                Generate & Download Image
+            </button>
+        </form>
+    </div>
+
+    <!-- Layout Hidden from Screen (Used purely for Image Rendering) -->
+    <div id="report-template-wrapper">
+        <div id="report-template">
+            <div class="report-title">TDS/pH Report</div>
+            <div class="report-meta">
+                <span id="report-date">Date: --/--/----</span>
+                <span id="report-time">Time: --:--:--</span>
+            </div>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RO TDS</td>
+                        <td id="val-ro-tds">-</td>
+                    </tr>
+                    <tr>
+                        <td>RO pH</td>
+                        <td id="val-ro-ph">-</td>
+                    </tr>
+                    <tr>
+                        <td>Feed Tank TDS</td>
+                        <td id="val-feed-tds">-</td>
+                    </tr>
+                    <tr>
+                        <td>Feed Tank pH</td>
+                        <td id="val-feed-ph">-</td>
+                    </tr>
+                    <tr>
+                        <td>Boiler TDS</td>
+                        <td id="val-boiler-tds">-</td>
+                    </tr>
+                    <tr>
+                        <td>Boiler pH</td>
+                        <td id="val-boiler-ph">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function generateAndDownloadImage() {
+            // Get current date
+            const now = new Date();
+            
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const dateStr = `${day}/${month}/${year}`;
+
+            // Get current time
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // '0' ki jagah '12'
+            const hoursStr = String(hours).padStart(2, '0');
+            const timeStr = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+
+            // Set Date & Time into Template
+            document.getElementById('report-date').innerText = `Date: ${dateStr}`;
+            document.getElementById('report-time').innerText = `Time: ${timeStr}`;
+
+            // Populate Table Values from Inputs
+            document.getElementById('val-ro-tds').innerText = document.getElementById('ro-tds').value || '-';
+            document.getElementById('val-ro-ph').innerText = document.getElementById('ro-ph').value || '-';
+            document.getElementById('val-feed-tds').innerText = document.getElementById('feed-tds').value || '-';
+            document.getElementById('val-feed-ph').innerText = document.getElementById('feed-ph').value || '-';
+            document.getElementById('val-boiler-tds').innerText = document.getElementById('boiler-tds').value || '-';
+            document.getElementById('val-boiler-ph').innerText = document.getElementById('boiler-ph').value || '-';
+
+            // Capture as High Quality Canvas & Download
+            const element = document.getElementById('report-template');
+            
+            html2canvas(element, {
+                scale: 2, // Ultra HD High Resolution Output
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `TDS_pH_Report_${day}_${month}_${year}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
