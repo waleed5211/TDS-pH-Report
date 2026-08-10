@@ -175,10 +175,10 @@
             justify-content: space-between;
             font-size: 15px;
             font-weight: 600;
-            color: #222;
-            margin-bottom: 25px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #222; /* Darker & thicker line */
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444; /* Clean simple line */
         }
 
         .report-table {
@@ -187,22 +187,22 @@
             margin-top: 10px;
         }
 
-        /* Fixed Sharp Table Borders */
+        /* Clean Uniform Table Lines */
         .report-table th, .report-table td {
-            border: 2px solid #222;
+            border: 1px solid #777;
             padding: 12px 16px;
             text-align: left;
             font-size: 15px;
         }
 
         .report-table th {
-            background-color: #f4f4f4;
+            background-color: #f2f2f2;
             font-weight: 700;
             color: #000;
         }
 
         .report-table td {
-            color: #111;
+            color: #222;
             font-weight: 500;
         }
 
@@ -309,7 +309,7 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
-            hours = hours ? hours : 12; // '0' ki jagah '12'
+            hours = hours ? hours : 12;
             const hoursStr = String(hours).padStart(2, '0');
             const timeStr = `${hoursStr}:${minutes} ${ampm}`;
 
@@ -325,11 +325,11 @@
             document.getElementById('val-boiler-tds').innerText = document.getElementById('boiler-tds').value || '-';
             document.getElementById('val-boiler-ph').innerText = document.getElementById('boiler-ph').value || '-';
 
-            // Capture as High Quality Canvas & Download
+            // Capture as Clean Sharp Image
             const element = document.getElementById('report-template');
             
             html2canvas(element, {
-                scale: 3, // Ultra-sharp crystal clear lines
+                scale: 2,
                 backgroundColor: '#ffffff',
                 useCORS: true,
                 logging: false
