@@ -167,8 +167,7 @@
             font-weight: 700;
             color: #111;
             margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .report-meta {
@@ -176,10 +175,10 @@
             justify-content: space-between;
             font-size: 15px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
+            color: #222;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #222; /* Darker & thicker line */
         }
 
         .report-table {
@@ -188,21 +187,22 @@
             margin-top: 10px;
         }
 
+        /* Fixed Sharp Table Borders */
         .report-table th, .report-table td {
-            border: 1px solid #111;
-            padding: 14px 18px;
+            border: 2px solid #222;
+            padding: 12px 16px;
             text-align: left;
             font-size: 15px;
         }
 
         .report-table th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
             font-weight: 700;
             color: #000;
         }
 
         .report-table td {
-            color: #222;
+            color: #111;
             font-weight: 500;
         }
 
@@ -255,7 +255,7 @@
             <div class="report-title">TDS/pH Report</div>
             <div class="report-meta">
                 <span id="report-date">Date: --/--/----</span>
-                <span id="report-time">Time: --:--:--</span>
+                <span id="report-time">Time: --:-- --</span>
             </div>
             <table class="report-table">
                 <thead>
@@ -304,15 +304,14 @@
             const year = now.getFullYear();
             const dateStr = `${day}/${month}/${year}`;
 
-            // Get current time
+            // Get current time (Without Seconds)
             let hours = now.getHours();
             const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12; // '0' ki jagah '12'
             const hoursStr = String(hours).padStart(2, '0');
-            const timeStr = `${hoursStr}:${minutes}:${seconds} ${ampm}`;
+            const timeStr = `${hoursStr}:${minutes} ${ampm}`;
 
             // Set Date & Time into Template
             document.getElementById('report-date').innerText = `Date: ${dateStr}`;
@@ -330,8 +329,10 @@
             const element = document.getElementById('report-template');
             
             html2canvas(element, {
-                scale: 2, // Ultra HD High Resolution Output
-                backgroundColor: '#ffffff'
+                scale: 3, // Ultra-sharp crystal clear lines
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `TDS_pH_Report_${day}_${month}_${year}.png`;
