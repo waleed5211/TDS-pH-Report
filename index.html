@@ -51,7 +51,7 @@
             border-radius: 28px;
             padding: 40px;
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             box-shadow: var(--glass-shadow);
             transform: translateY(0);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
@@ -90,16 +90,39 @@
             margin-bottom: 16px;
         }
 
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
         .input-group label {
-            display: block;
             font-size: 13px;
             font-weight: 500;
-            margin-bottom: 6px;
             color: rgba(255, 255, 255, 0.85);
             letter-spacing: 0.3px;
         }
 
-        .input-group input {
+        /* Custom Styling for Selection Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #007AFF;
+            cursor: pointer;
+        }
+
+        .input-group input[type="number"] {
             width: 100%;
             padding: 12px 16px;
             border-radius: 14px;
@@ -111,13 +134,13 @@
             transition: all 0.3s ease;
         }
 
-        .input-group input:focus {
+        .input-group input[type="number"]:focus {
             background: rgba(255, 255, 255, 0.18);
             border-color: rgba(255, 255, 255, 0.5);
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        .input-group input::placeholder {
+        .input-group input[type="number"]::placeholder {
             color: rgba(255, 255, 255, 0.4);
         }
 
@@ -178,7 +201,7 @@
             color: #333;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #444; /* Clean simple line */
+            border-bottom: 1px solid #444;
         }
 
         .report-table {
@@ -219,27 +242,62 @@
         
         <form id="data-form">
             <div class="input-group">
-                <label for="ro-tds">RO TDS</label>
+                <div class="label-row">
+                    <label for="ro-tds">RO TDS</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-ro-tds" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="ro-tds" step="any" placeholder="e.g. 50">
             </div>
+
             <div class="input-group">
-                <label for="ro-ph">RO pH</label>
+                <div class="label-row">
+                    <label for="ro-ph">RO pH</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-ro-ph" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="ro-ph" step="any" placeholder="e.g. 6.8">
             </div>
+
             <div class="input-group">
-                <label for="feed-tds">Feed Tank TDS</label>
+                <div class="label-row">
+                    <label for="feed-tds">Feed Tank TDS</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-feed-tds" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="feed-tds" step="any" placeholder="e.g. 120">
             </div>
+
             <div class="input-group">
-                <label for="feed-ph">Feed Tank pH</label>
+                <div class="label-row">
+                    <label for="feed-ph">Feed Tank pH</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-feed-ph" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="feed-ph" step="any" placeholder="e.g. 7.5">
             </div>
+
             <div class="input-group">
-                <label for="boiler-tds">Boiler TDS</label>
+                <div class="label-row">
+                    <label for="boiler-tds">Boiler TDS</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-boiler-tds" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="boiler-tds" step="any" placeholder="e.g. 2500">
             </div>
+
             <div class="input-group">
-                <label for="boiler-ph">Boiler pH</label>
+                <div class="label-row">
+                    <label for="boiler-ph">Boiler pH</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="chk-boiler-ph" checked> Include
+                    </label>
+                </div>
                 <input type="number" id="boiler-ph" step="any" placeholder="e.g. 10.5">
             </div>
 
@@ -264,31 +322,8 @@
                         <th>Value</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>RO TDS</td>
-                        <td id="val-ro-tds">-</td>
-                    </tr>
-                    <tr>
-                        <td>RO pH</td>
-                        <td id="val-ro-ph">-</td>
-                    </tr>
-                    <tr>
-                        <td>Feed Tank TDS</td>
-                        <td id="val-feed-tds">-</td>
-                    </tr>
-                    <tr>
-                        <td>Feed Tank pH</td>
-                        <td id="val-feed-ph">-</td>
-                    </tr>
-                    <tr>
-                        <td>Boiler TDS</td>
-                        <td id="val-boiler-tds">-</td>
-                    </tr>
-                    <tr>
-                        <td>Boiler pH</td>
-                        <td id="val-boiler-ph">-</td>
-                    </tr>
+                <tbody id="report-table-body">
+                    <!-- Dynamic Rows Will Be Generated Here -->
                 </tbody>
             </table>
         </div>
@@ -296,9 +331,44 @@
 
     <script>
         function generateAndDownloadImage() {
+            // All available parameters configuration
+            const parameters = [
+                { chkId: 'chk-ro-tds', inputId: 'ro-tds', name: 'RO TDS' },
+                { chkId: 'chk-ro-ph', inputId: 'ro-ph', name: 'RO pH' },
+                { chkId: 'chk-feed-tds', inputId: 'feed-tds', name: 'Feed Tank TDS' },
+                { chkId: 'chk-feed-ph', inputId: 'feed-ph', name: 'Feed Tank pH' },
+                { chkId: 'chk-boiler-tds', inputId: 'boiler-tds', name: 'Boiler TDS' },
+                { chkId: 'chk-boiler-ph', inputId: 'boiler-ph', name: 'Boiler pH' }
+            ];
+
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = ''; // Clear previous rows
+
+            let hasSelected = false;
+
+            // Generate rows only for selected checkboxes
+            parameters.forEach(param => {
+                const isChecked = document.getElementById(param.chkId).checked;
+                if (isChecked) {
+                    hasSelected = true;
+                    const val = document.getElementById(param.inputId).value || '-';
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${param.name}</td>
+                        <td>${val}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            if (!hasSelected) {
+                alert('Meharbani karke kam az kam ek parameter select karein!');
+                return;
+            }
+
             // Get current date
             const now = new Date();
-            
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
@@ -316,14 +386,6 @@
             // Set Date & Time into Template
             document.getElementById('report-date').innerText = `Date: ${dateStr}`;
             document.getElementById('report-time').innerText = `Time: ${timeStr}`;
-
-            // Populate Table Values from Inputs
-            document.getElementById('val-ro-tds').innerText = document.getElementById('ro-tds').value || '-';
-            document.getElementById('val-ro-ph').innerText = document.getElementById('ro-ph').value || '-';
-            document.getElementById('val-feed-tds').innerText = document.getElementById('feed-tds').value || '-';
-            document.getElementById('val-feed-ph').innerText = document.getElementById('feed-ph').value || '-';
-            document.getElementById('val-boiler-tds').innerText = document.getElementById('boiler-tds').value || '-';
-            document.getElementById('val-boiler-ph').innerText = document.getElementById('boiler-ph').value || '-';
 
             // Capture as Clean Sharp Image
             const element = document.getElementById('report-template');
